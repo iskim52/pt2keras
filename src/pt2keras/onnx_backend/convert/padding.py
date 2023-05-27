@@ -22,6 +22,7 @@ def pad(node: OnnxNode, input_layer, *inputs):
         raise ValueError(f'Invalid Pad mode. Valid pad modes: {",".join(_VALID_PAD_MODES)}')
 
     name = f'{node.name}_Pad'
+    name = name.replace('/', '')
     output = None
     output_layer = None
 
@@ -32,12 +33,14 @@ def pad(node: OnnxNode, input_layer, *inputs):
 
         # Magic ordering
         if len(pads) == 8:
+            name = name.replace('/', '')
             output_layer = keras.layers.ZeroPadding2D(
                 padding=((pads[2], pads[6]), (pads[3], pads[7])),
                 name=name,
             )
         else:
             logger.warning('Caution - no test yet')
+            name = name.replace('/', '')
             output_layer = keras.layers.ZeroPadding3D(
                 padding=((pads[2], pads[7]), (pads[3], pads[8]), (pads[4], pads[9])),
                 name=name,
@@ -56,7 +59,7 @@ def pad(node: OnnxNode, input_layer, *inputs):
                     x, [[0, 0], [0, 0], [pads[2], pads[7]], [pads[3], pads[8]], [pads[4], pads[9]]], 'REFLECT'
                 )
             return layer
-
+        name = name.replace('/', '')
         output_layer = keras.layers.Lambda(target_layer, name=name)
         output = output_layer(input_layer)
 
@@ -74,7 +77,7 @@ def pad(node: OnnxNode, input_layer, *inputs):
                     x, [[0, 0], [0, 0], [pads[2], pads[7]], [pads[3], pads[8]], [pads[4], pads[9]]], 'SYMMETRIC'
                 )
             return layer
-
+        name = name.replace('/', '')
         output_layer = keras.layers.Lambda(target_layer, name=name)
         output = output_layer(input_layer)
 

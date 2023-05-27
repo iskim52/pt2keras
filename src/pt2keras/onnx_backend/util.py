@@ -152,7 +152,7 @@ def to_tf(obj, fake_input_layer=None, name=None):
             if not isinstance(inp, (np.ndarray, np.generic)):
                 inp = np.array(inp, dtype=dtype)
             return tf.constant(inp, dtype=inp.dtype)
-
+        name = name.replace('/','')
         lambda_layer = keras.layers.Lambda(target_layer, name=name)
         output = lambda_layer(fake_input_layer)
 

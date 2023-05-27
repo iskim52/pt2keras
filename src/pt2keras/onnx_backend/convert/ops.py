@@ -28,8 +28,8 @@ def acos(node: OnnxNode, input_layer, *inputs):
 
         layer = tf.math.acos(x)
         return layer
-
-    acos_layer = keras.layers.Lambda(target_layer, name=f'keras_acos_{node.name}')
+    node_name = node.name.replace('/', '')
+    acos_layer = keras.layers.Lambda(target_layer, name=f'keras_acos_{node_name}')
     return acos_layer(input_layer), acos_layer
 
 
@@ -40,8 +40,8 @@ def ceil(node: OnnxNode, input_layer, *inputs):
 
         layer = tf.math.ceil(x)
         return layer
-
-    ceil_layer = keras.layers.Lambda(target_layer, name=f'keras_ceil_{node.name}')
+    node_name = node.name.replace('/', '')
+    ceil_layer = keras.layers.Lambda(target_layer, name=f'keras_ceil_{node_name}')
     return ceil_layer(input_layer), ceil_layer
 
 
@@ -124,7 +124,8 @@ def multiply(node: OnnxNode, input_layer, lhs, rhs):
             layer = tf.multiply(x[0], x[1])
             return layer
 
-        output_layer = keras.layers.Lambda(target_layer, name=f'mul_{node.name}')
+        node_name = node.name.replace('/', '')
+        output_layer = keras.layers.Lambda(target_layer, name=f'mul_{node_name}')
         output = output_layer([lhs, rhs])
     return output, output_layer
 

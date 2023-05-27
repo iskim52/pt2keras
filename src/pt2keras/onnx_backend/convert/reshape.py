@@ -50,7 +50,8 @@ def reshape(node, input_tensor, *inputs):
 
             # Removing entire feature dimension. Output shape is : (feature_count,)
             if len(reshape_target) == 1 and reshape_target[0] == -1:
-                output_layer = keras.layers.Flatten(name=f'{node.name}_flatten')
+                flatten_name = f'{node.name}_flatten'.replace('/','')
+                output_layer = keras.layers.Flatten(name=flatten_name)
                 output = output_layer(tensor_chw)
                 return output, None
 
@@ -66,11 +67,12 @@ def reshape(node, input_tensor, *inputs):
 def flatten(node: OnnxNode, input_layer, *input_tensor):
     if len(input_tensor) != 1:
         raise AttributeError('Number of inputs is not equal to 1 for Flatten()')
+    flatten_name = f'{node.name}_flatten'.replace('/','')
 
     input_tensor = input_tensor[0]
     transpose_custom = keras.layers.Permute((3, 1, 2))
     tensor_chw = transpose_custom(input_tensor)
-    output_layer = keras.layers.Flatten(name=f'{node.name}_flatten')
+    output_layer = keras.layers.Flatten(name=flatten_name)
     output = output_layer(tensor_chw)
     return output, output_layer
 
@@ -123,8 +125,8 @@ def concat(node: OnnxNode, _, *inputs):
                     import tensorflow as tf
 
                     return tf.concat(x, axis=axis)
-
-                output_layer = keras.layers.Lambda(target_layer, name=f'{node.name}_CHW')
+                chw_name = f'{node.name}_CHW'.replace('/','')
+                output_layer = keras.layers.Lambda(target_layer, name=chw_name)
                 output = output_layer(layer_input)
         else:
             output = layer_input[0]

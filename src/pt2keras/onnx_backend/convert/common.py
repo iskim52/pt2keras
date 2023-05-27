@@ -34,6 +34,7 @@ def _test_double_input_operation(node: OnnxNode, opset_version, input_keras_laye
         raise ValueError(f'Expected two inputs, received: {len(inputs)} inputs')
 
     # create the computational node graph
+    node_name = node.name.replace('/','')
     node_def = helper.make_node(
         node.op_type, name=node.name, inputs=node.input_nodes, outputs=node.output_nodes, **node.attributes
     )
@@ -148,8 +149,9 @@ def _test_operation(node: OnnxNode, opset_version: int, input_keras_layer, outpu
             attrs[key] = attribute_val
 
     # create the computational node graph
+    node_name = node.name.replace('/','')
     node_def = helper.make_node(
-        node.op_type, name=node.name, inputs=node.input_nodes, outputs=node.output_nodes, **attrs
+        node.op_type, name=node_name, inputs=node.input_nodes, outputs=node.output_nodes, **attrs
     )
 
     # Create graph input node

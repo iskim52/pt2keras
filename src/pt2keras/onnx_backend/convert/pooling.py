@@ -104,6 +104,7 @@ def max_pool(node: OnnxNode, input_layer, _):
     else:
         logger.debug('Unable to use `same` padding. Add ZeroPadding2D layer to fix shapes.')
         padding_name = node.name + '_pad'
+        padding_name = padding_name.replace('/', '')
         if len(kernel_shape) == 2:
             padding = None
 
@@ -149,6 +150,7 @@ def average_pool(node: OnnxNode, input_layer, _):
     pads = attributes['pads'] if 'pads' in attributes else [0, 0, 0, 0, 0, 0]
     pad = 'valid'
 
+
     if (
         all([shape % 2 == 1 for shape in kernel_shape])
         and all([kernel_shape[i] // 2 == pads[i] for i in range(len(kernel_shape))])
@@ -159,24 +161,27 @@ def average_pool(node: OnnxNode, input_layer, _):
     else:
         logger.warning('Unable to use `same` padding. Add ZeroPadding2D layer to fix shapes.')
         padding_name = f'{node.name}_pad'
+        padding_name = padding_name.replace('/', '')
         if len(kernel_shape) == 2:
             padding_layer = keras.layers.ZeroPadding2D(padding=pads[: len(stride_shape)], name=padding_name)
         else:  # 3D padding
             padding_layer = keras.layers.ZeroPadding3D(padding=pads[: len(stride_shape)], name=padding_name)
         input_layer = padding_layer(input_layer)
     if len(kernel_shape) == 2:
+        pooling_name = f'{node.name}_average_pooling'.replace('/','')
         pooling = keras.layers.AveragePooling2D(
             pool_size=kernel_shape,
             strides=stride_shape,
             padding=pad,
-            name=f'{node.name}_average_pooling',
+            name=pooling_name,
         )
     else:
+        pooling_name = f'{node.name}_average_pooling'.replace('/','')
         pooling = keras.layers.AveragePooling3D(
             pool_size=kernel_shape,
             strides=stride_shape,
             padding=pad,
-            name=f'{node.name}_average_pooling',
+            name=pooling_name,
         )
     output = pooling(input_layer)
     return output, pooling

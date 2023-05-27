@@ -42,6 +42,7 @@ def conv(node: OnnxNode, input_layer, *inputs):
     # This caused me a lot headache before figuring it out thanks to onnx2keras.
     if padding:
         padding_name = node.name + '_pad'
+        padding_name = padding_name.replace('/', '')
         padding_layer = keras.layers.ZeroPadding2D(padding=padding, name=padding_name, data_format='channels_last')
         input_layer = padding_layer(input_layer)
 
